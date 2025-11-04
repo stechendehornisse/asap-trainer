@@ -1,0 +1,22 @@
+<feedback>
+  <record>
+    <row>
+      <source_ip>192.0.2.10</source_ip>
+      <count>20</count>
+    </row>
+    <auth_results>
+      <spf><result>pass</result></spf>
+      <dkim><result>fail</result></dkim>
+    </auth_results>
+  </record>
+  <record>
+    <row>
+      <source_ip>198.51.100.5</source_ip>
+      <count>5</count>
+    </row>
+    <auth_results>
+      <spf><result>fail</result></spf>
+      <dkim><result>fail</result></dkim>
+    </auth_results>
+  </record>
+</feedback>
