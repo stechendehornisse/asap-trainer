@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Quiz from "./modules/Quiz";
+import HeaderCheck from "./modules/HeaderCheck";
+import DmarcReader from "./modules/DmarcReader";
+import RulesAudit from "./modules/RulesAudit";
 
-function App() {
-  const [count, setCount] = useState(0)
+const tabs = [
+  { key: "quiz", label: "Quiz" },
+  { key: "headers", label: "Header Check" },
+  { key: "dmarc", label: "DMARC RUA Reader" },
+  { key: "rules", label: "Rules Audit" },
+];
 
+export default function App() {
+  const [active, setActive] = useState("quiz");
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div style={{ maxWidth: 960, margin: "0 auto", padding: 16 }}>
+      <h1>
+        ASAP — Anti-BEC Skill Assessment Platform{" "}
+        <span style={{ fontSize: 12 }}>v0.1.0 (2025-11-04)</span>
+      </h1>
+      <p>Учебный тренажёр для техперсонала: почтовая инфраструктура и BEC.</p>
 
-export default App
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        {tabs.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setActive(t.key)}
+            style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: active === t.key ? "2px solid black" : "1px solid #bbb",
+              background: active === t.key ? "#f0f0f0" : "white",
+              cursor: "pointer",
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {active === "quiz" && <Quiz />}
+      {active === "headers" && <HeaderCheck />}
+      {active === "dmarc" && <DmarcReader />}
+      {active === "rules" && <RulesAudit />}
+
+      <hr style={{ margin: "24px 0" }} />
+      <small>Все данные — учебные. Реальные корпоративные артефакты не используйте.</small>
+    </div>
+  );
+}
