@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="32" viewBox="0 0 180 32">
+  <!-- фон -->
+  <rect rx="8" ry="8" width="180" height="32" fill="#0f172a"/>
+  <!-- щит: центрирован по высоте (верх ~6, низ ~26, центр 16) -->
+  <g>
+    <path d="M18 6l8 3v6c0 6-4.5 9-8 10-3.5-1-8-4-8-10V9l8-3z" fill="#60a5fa"/>
+    <path d="M18 6l8 3v6c0 6-4.5 9-8 10" fill="none" stroke="#1e293b" stroke-width="1.2" opacity="0.5"/>
+  </g>
+  <!-- подписи: выравнены по вертикальному центру (y=16) -->
+  <g font-family="Inter, Arial, sans-serif" font-weight="700" dominant-baseline="middle">
+    <text x="36" y="16" font-size="14" fill="#fff">ASAP</text>
+    <text x="76" y="16" font-size="12" fill="#93c5fd" letter-spacing=".2px">anti-bec trainer</text>
+  </g>
+</svg>
