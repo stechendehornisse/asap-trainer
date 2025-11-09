@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { parseDmarcXml, DmarcStat } from "../lib/parseDmarc";
+import { parseDmarcXml, type DmarcStat } from "../lib/parseDmarc";
 
 export default function DmarcReader() {
   const [stat, setStat] = useState<DmarcStat | null>(null);

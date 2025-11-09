@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { lintRules, RuleFinding } from "../lib/lintRules";
+import { lintRules, type RuleFinding } from "../lib/lintRules";
 
 export default function RulesAudit() {
   const [text, setText] = useState("");
