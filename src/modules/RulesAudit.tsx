@@ -125,7 +125,6 @@ function lintRules(objs: Record<string, string>[], internalBase?: string): Audit
 
     // объединённые строки условий/действий (на случай нестандартных выгрузок)
     const cond = condKeys.map(k => o[k]).filter(Boolean).join(" | ").toLowerCase();
-    const act  = actKeys.map(k => o[k]).filter(Boolean).join(" | ").toLowerCase();
     const all  = (Object.values(o).join(" | ").toLowerCase());
 
     // 1) Внешние переадресации/редиректы (высокий)
