@@ -1,5 +1,25 @@
 import { useMemo, useState } from "react";
 
+const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbzHlw1hQM3rUWwVrQynPp1J1XwWsrjAUPQJFQD8_QaXGCdoLdufy35kpOfqsWWxefJi/exec"; // пример: https://script.google.com/macros/s/XXXX/exec
+const LOG_VERSION = "v0.2.0";
+
+
+function getClientId(): string {
+  const k = "asapClientId";
+  let id = localStorage.getItem(k);
+  if (!id) {
+    
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      
+      id = crypto.randomUUID();
+    } else {
+      id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+    localStorage.setItem(k, id);
+  }
+  return id;
+}
+
 type Q = {
   text: string;
   options: string[];
@@ -202,6 +222,34 @@ export default function Quiz() {
 
   function submit() {
     setSubmitted(true);
+
+    // 🔹 Отправка статистики в Google Apps Script → Sheets
+    // (no-cors, text/plain, keepalive — чтобы не упираться в CORS на GitHub Pages и не зависеть от ответа)
+    const payload = {
+      ts: new Date().toISOString(),
+      score,
+      total: questions.length,
+      version: LOG_VERSION,
+      clientId: getClientId(),
+      userAgent: navigator.userAgent,
+      referrer: document.referrer,
+      page: location.href,
+      tzOffset: new Date().getTimezoneOffset()
+      // Если в GAS включите секрет:
+      // secret: "set-strong-token-here"
+    };
+
+    try {
+      fetch(LOG_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    } catch {
+      /* игнорируем сетевые ошибки для UX */
+    }
   }
 
   function reset() {
