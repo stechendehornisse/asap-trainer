@@ -1,0 +1,3 @@
+Authentication-Results: example.com; spf=pass; dkim=pass; dmarc=pass
+Received: from mail-a.example.net by mx.example.com with ESMTPS; Tue, 01 Jan 2024 10:00:00 +0000
+X-MS-Exchange-Transport-Rules: rule-id=42

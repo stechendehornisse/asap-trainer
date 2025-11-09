@@ -1,0 +1,4 @@
+action,condition,value
+forward,contains,http://external.example
+move,contains,invoice
+delete,contains,payment
