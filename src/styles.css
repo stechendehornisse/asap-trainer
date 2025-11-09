@@ -1,0 +1,158 @@
+:root {
+  --bg-top: #0b1220;   /* единый тёмно-синий */
+  --text:   #e5e7eb;
+  --subtle: #94a3b8;
+  --card:   #0f172a;
+  --card-br:#1f2937;
+  --accent: #2563eb;
+}
+
+/* единый фон на всех корневых слоях */
+html, body, #root { height: 100%; }
+html { background: var(--bg-top) !important; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg-top) !important;
+  color: var(--text);
+  overflow-x: hidden;             /* страховка от «щелей» справа */
+}
+#root { background: var(--bg-top) !important; }
+
+/* верхняя панель — БЕЗ прозрачности/blur */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg-top);      /* было rgba(...,.96) → делаем сплошной */
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.container {
+  max-width: 980px; margin: 0 auto; padding: 12px 16px;
+}
+
+/* логотип-кнопка «домой» + разделитель */
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand img { height: 28px; }
+.divider { color: var(--subtle); opacity: .9; margin: 0 8px; user-select: none; }
+
+/* равные кнопки навигации (адаптив) */
+.nav {
+  display: grid; gap: 8px; margin-left: 16px;
+  grid-template-columns: repeat(4, 160px);
+}
+@media (max-width: 900px) { .nav { grid-template-columns: repeat(2, minmax(140px,1fr)); margin-left: 0; } }
+@media (max-width: 520px) { .nav { grid-template-columns: 1fr 1fr; } }
+.nav a {
+  display: inline-flex; justify-content: center; align-items: center;
+  height: 40px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: var(--bg-top); color: var(--text);
+  text-decoration: none;
+}
+.nav a:hover, .nav a:focus {
+  outline: none; border-color: rgba(37,99,235,.6);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+}
+
+/* кнопка «Назад» */
+.back-wrap { margin-left: auto; }
+.back {
+  height: 40px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: transparent; color: var(--text); cursor: pointer;
+}
+.back:hover, .back:focus { border-color: rgba(37,99,235,.6); box-shadow: 0 0 0 3px rgba(37,99,235,.2); }
+
+/* заголовок и подзаголовок на главной */
+.hero-title { margin: 16px 0 6px; font-weight: 800; font-size: 22px; }
+.hero-sub  { margin: 0 0 16px; color: var(--subtle); font-size: 14px; }
+
+/* карточки: 1 + 3 (адаптив) */
+.cards {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+}
+.cards > a:first-child { grid-column: 1 / -1; }
+@media (max-width: 900px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+  .cards > a:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) { .cards { grid-template-columns: 1fr; } }
+
+.card {
+  display: block; padding: 16px; text-decoration: none; color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--card-br);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+.card:hover { border-color: rgba(37,99,235,.6); box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+.card .t { font-weight: 700; margin-bottom: 6px; }
+.card .d { color: var(--subtle); font-size: 14px; }
+
+/* контентные секции под шапкой — тот же фон */
+.page {
+  max-width: 980px; margin: 0 auto; padding: 16px;
+  background: var(--bg-top) !important;
+}
+
+/* футер */
+.footer {
+  max-width: 980px; margin: 24px auto 16px; padding: 0 16px;
+  font-size: 12px; color: var(--subtle);
+}
+
+/* квиз: жёсткий фон и прозрачные варианты */
+.quiz-wrap { background: var(--bg-top) !important; }
+.quiz-wrap label { background: transparent !important; }
+
+/* ——— ЕДИНЫЙ СТИЛЬ КНОПОК ——— */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 40px; padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: none;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .02s ease;
+}
+.btn:hover, .btn:focus {
+  outline: none;
+  border-color: rgba(37,99,235,.6);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+}
+.btn:active { transform: translateY(1px); }
+
+/* акцентная */
+.btn.primary {
+  background: #0d1a33;
+  border-color: rgba(37,99,235,.35);
+}
+.btn.primary:hover, .btn.primary:focus {
+  border-color: rgba(37,99,235,.8);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.25);
+}
+
+/* «прозрачная» (на второстепенные действия) */
+.btn.ghost {
+  background: transparent;
+}
+
+/* disabled-состояние */
+.btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  box-shadow: none;
+  border-color: rgba(255,255,255,.08);
+}
+
+/* ——— МИКРО-ТИПОГРАФИКА ——— */
+.page h2 {
+  margin: 6px 0 10px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.page p { line-height: 1.5; }

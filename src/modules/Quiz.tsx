@@ -1,16 +1,14 @@
 import { useMemo, useState } from "react";
 
-const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbzHlw1hQM3rUWwVrQynPp1J1XwWsrjAUPQJFQD8_QaXGCdoLdufy35kpOfqsWWxefJi/exec"; // пример: https://script.google.com/macros/s/XXXX/exec
+const LOG_ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbzHlw1hQM3rUWwVrQynPp1J1XwWsrjAUPQJFQD8_QaXGCdoLdufy35kpOfqsWWxefJi/exec";
 const LOG_VERSION = "v0.2.0";
-
 
 function getClientId(): string {
   const k = "asapClientId";
   let id = localStorage.getItem(k);
   if (!id) {
-    
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-      
       id = crypto.randomUUID();
     } else {
       id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -41,7 +39,7 @@ function shuffleArray<T>(src: T[]): T[] {
 function shuffleQuestion(q: Q): ShuffledQ {
   const idx = q.options.map((_, i) => i);
   const shuffledIdx = shuffleArray(idx);
-  const options = shuffledIdx.map(i => q.options[i]);
+  const options = shuffledIdx.map((i) => q.options[i]);
   const correct = shuffledIdx.indexOf(q.correct);
   return { text: q.text, options, correct, explain: q.explain };
 }
@@ -56,7 +54,8 @@ const BASE_QUESTIONS: Q[] = [
     text: "Какой тип DNS-записи используется для публикации SPF-политики домена?",
     options: ["MX", "TXT", "SRV", "CAA"],
     correct: 1,
-    explain: "SPF публикуется в TXT-записях домена отправителя."
+    explain:
+      "SPF публикуется в TXT-записях DNS для домена-отправителя (например, example.com: TXT «v=spf1 …»). Получатель использует эту политику для проверки, допускается ли IP-адрес отправляющего SMTP-хоста."
   },
   {
     text: "Где хранится открытый ключ DKIM?",
@@ -67,19 +66,22 @@ const BASE_QUESTIONS: Q[] = [
       "В записи _dmarc.<домен>"
     ],
     correct: 1,
-    explain: "Путь вида selector._domainkey.example.com (тип TXT)."
+    explain:
+      "Открытый ключ DKIM публикуется в TXT по имени вида selector._domainkey.example.com. В письме указывается селектор (s=) и домен (d=), по ним получатель извлекает ключ для верификации подписи."
   },
   {
     text: "Какой тег DMARC задаёт жёсткую политику отклонения?",
     options: ["rua=mailto:", "pct=100", "p=reject", "adkim=s"],
     correct: 2,
-    explain: "p=reject — отклонение при невыравнивании DMARC."
+    explain:
+      "Тег p управляет политикой домена: p=reject — требование отклонять сообщения, которые не проходят DMARC-выравнивание (ни SPF, ни DKIM не выровнены с доменом From)."
   },
   {
     text: "SPF=pass (НЕ выровнен), DKIM=fail. Итог DMARC?",
     options: ["pass", "fail", "temporary pass", "neutral"],
     correct: 1,
-    explain: "DMARC требует выравнивания хотя бы одного механизма; если оба не выровнены — fail."
+    explain:
+      "DMARC требует, чтобы хотя бы один механизм (SPF или DKIM) был не просто успешным, но и выровненным с доменом From. Если DKIM=fail, а SPF pass относится к иному домену (не выровнен), итог DMARC — fail."
   },
   {
     text: "Где должен располагаться файл политики MTA-STS?",
@@ -90,7 +92,8 @@ const BASE_QUESTIONS: Q[] = [
       "dns: _mta-sts.example.com TXT “в=STSv1; mode=enforce”"
     ],
     correct: 1,
-    explain: "Политика доступна по HTTPS на mta-sts.<домен> в /.well-known/mta-sts.txt."
+    explain:
+      "MTA-STS-политика публикуется по HTTPS на mta-sts.<домен> в пути /.well-known/mta-sts.txt. Сам факт наличия политики анонсируется отдельной TXT-записью _mta-sts.<домен>, но файл политики берётся именно по HTTPS с поддоменом mta-sts."
   },
   {
     text: "Какой DNS-хост и тип записи используются для TLS-RPT?",
@@ -101,7 +104,8 @@ const BASE_QUESTIONS: Q[] = [
       "_tlsrpt.<домен> TXT"
     ],
     correct: 0,
-    explain: "Отчётность TLS-RPT публикуется в TXT по имени _smtp._tls.<домен>."
+    explain:
+      "TLS-RPT (отчётность о доставке по TLS) публикуется как TXT-запись по имени _smtp._tls.<домен>. В ней задаётся mailto-адрес для агрегированных отчётов о TLS-сессиях."
   },
   {
     text: "Какой признак указывает на злоупотребление OAuth-доступом почтового ящика?",
@@ -112,7 +116,8 @@ const BASE_QUESTIONS: Q[] = [
       "Использование POP3 внутри сети"
     ],
     correct: 1,
-    explain: "Избыточные scope’ы у непонятного приложения — красный флаг."
+    explain:
+      "Чрезмерные scope’ы (Mail.ReadWrite + offline_access) у стороннего приложения без понятного бизнес-кейса — высокий риск: возможна долговременная эксфильтрация/манипуляции письмами."
   },
   {
     text: "Что является базовой мерой против BEC при изменении платёжных реквизитов?",
@@ -123,7 +128,8 @@ const BASE_QUESTIONS: Q[] = [
       "Отключение DKIM у своей почты"
     ],
     correct: 1,
-    explain: "Двухканальная верификация — ключевая организационная мера."
+    explain:
+      "Двухканальная верификация (звонок/личное подтверждение по известному номеру, не из письма) — ключевая организационная мера для предотвращения подмены реквизитов."
   },
   {
     text: "Какой заголовок указывает на срабатывание транспортных правил Exchange?",
@@ -134,7 +140,8 @@ const BASE_QUESTIONS: Q[] = [
       "List-Unsubscribe"
     ],
     correct: 0,
-    explain: "X-MS-Exchange-Transport-Rules — индикатор обработок на транспорте."
+    explain:
+      "Заголовок X-MS-Exchange-Transport-Rules добавляется при обработке письма транспортными правилами Exchange и помогает в триаже/аудите."
   },
   {
     text: "Что означает adkim=s в DMARC?",
@@ -145,7 +152,8 @@ const BASE_QUESTIONS: Q[] = [
       "Отключение проверки DKIM"
     ],
     correct: 1,
-    explain: "s = strict: домен из d= должен строго совпадать с From-доменом."
+    explain:
+      "adkim=s включает строгое выравнивание DKIM: домен из тега d= в подписи должен точно совпадать с доменом в поле From (без использования организационного домена)."
   },
   {
     text: "Как распознать возможную «внешнюю авто-переадресацию» по правилам ящика?",
@@ -156,7 +164,8 @@ const BASE_QUESTIONS: Q[] = [
       "Категоризация писем по теме meeting"
     ],
     correct: 1,
-    explain: "Внешние forward’ы — частый индикатор компрометации."
+    explain:
+      "Правила с action=forward на внешний адрес — частый индикатор компрометации и эксфильтрации. Их следует инвентаризировать и при необходимости блокировать."
   },
   {
     text: "Что значит pct=25 в DMARC?",
@@ -167,7 +176,8 @@ const BASE_QUESTIONS: Q[] = [
       "Разрешать 25% доменов без DKIM"
     ],
     correct: 1,
-    explain: "Политика применяется к доле сообщений (процент выборки)."
+    explain:
+      "Тег pct управляет долей сообщений, к которым применяется политика (семплирование). pct=25 — применяем политику к 25% входящих для домена From."
   },
   {
     text: "Где публикуется запись DMARC?",
@@ -178,7 +188,8 @@ const BASE_QUESTIONS: Q[] = [
       "_arc.<домен> TXT"
     ],
     correct: 0,
-    explain: "Запись DMARC — TXT на поддомене _dmarc.<домен>."
+    explain:
+      "DMARC публикуется как TXT по имени _dmarc.<домен>, например _dmarc.example.com: «v=DMARC1; p=…; rua=…». Не путать с DKIM (_domainkey) и ARC."
   },
   {
     text: "Что НЕ относится к LOTS (Living Off Trusted Services)?",
@@ -189,7 +200,8 @@ const BASE_QUESTIONS: Q[] = [
       "Отправка писем через легитимные облачные SMTP"
     ],
     correct: 1,
-    explain: "LOTS — эксплуатация доверенных сервисов, а не локальных уязвимостей MTA."
+    explain:
+      "LOTS — злоупотребление доверенными внешними сервисами (облака, SaaS, публичные площадки). Эксплуатация локальной уязвимости MTA — это не LOTS, а прямой техэксплойт инфраструктуры."
   },
   {
     text: "Какой базовый индикатор возможной подмены реквизитов в цепочке деловой переписки?",
@@ -200,7 +212,8 @@ const BASE_QUESTIONS: Q[] = [
       "Повышение счётчика Received"
     ],
     correct: 0,
-    explain: "Нетипичный формат/реквизиты — повод для двухканальной верификации."
+    explain:
+      "Несвойственный компании формат счёта/шаблона письма, неожиданные поля/сроки оплаты — частый маркер BEC. Требуется двухканальная верификация до проведения платежа."
   }
 ];
 
@@ -215,6 +228,7 @@ export default function Quiz() {
   );
 
   function choose(qi: number, oi: number) {
+    if (submitted) return; // блокируем смену после «Проверить»
     const next = answers.slice();
     next[qi] = oi;
     setAnswers(next);
@@ -223,8 +237,7 @@ export default function Quiz() {
   function submit() {
     setSubmitted(true);
 
-    // 🔹 Отправка статистики в Google Apps Script → Sheets
-    // (no-cors, text/plain, keepalive — чтобы не упираться в CORS на GitHub Pages и не зависеть от ответа)
+    // Логирование результата в Google Apps Script → Sheets
     const payload = {
       ts: new Date().toISOString(),
       score,
@@ -235,8 +248,6 @@ export default function Quiz() {
       referrer: document.referrer,
       page: location.href,
       tzOffset: new Date().getTimezoneOffset()
-      // Если в GAS включите секрет:
-      // secret: "set-strong-token-here"
     };
 
     try {
@@ -248,7 +259,7 @@ export default function Quiz() {
         keepalive: true
       }).catch(() => {});
     } catch {
-      /* игнорируем сетевые ошибки для UX */
+      /* ignore */
     }
   }
 
@@ -260,53 +271,65 @@ export default function Quiz() {
   }
 
   return (
-    <div>
+    <div className="quiz-wrap">
       <h2>Quiz (учебный тест)</h2>
-      <p>При каждом открытии вкладки порядок вопросов и вариантов меняется.</p>
+      <p><b>Внимание!</b> При каждом открытии вкладки порядок вопросов и вариантов меняется.</p>
 
       <ol>
-        {questions.map((q, qi) => (
-          <li key={qi} style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 600 }}>{q.text}</div>
-            {q.options.map((opt, oi) => {
-              const picked = answers[qi] === oi;
-              const correct = submitted && oi === q.correct;
-              const wrong = submitted && picked && oi !== q.correct;
-              const border =
-                correct ? "2px solid #2e7d32" : wrong ? "2px solid #c62828" : "1px solid #bbb";
-              return (
-                <label
-                  key={oi}
-                  style={{
-                    display: "block",
-                    marginTop: 6,
-                    padding: "6px 8px",
-                    borderRadius: 8,
-                    border
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name={`q${qi}`}
-                    checked={picked}
-                    onChange={() => choose(qi, oi)}
-                    style={{ marginRight: 8 }}
-                  />
-                  {opt}
-                </label>
-              );
-            })}
-            {submitted && (
-              <div style={{ marginTop: 6, fontSize: 13 }}>
-                <b>Пояснение: </b>{q.explain}
-              </div>
-            )}
-          </li>
-        ))}
+        {questions.map((q, qi) => {
+          const picked = answers[qi];
+          const isWrong = submitted && picked !== q.correct; // показываем пояснение ТОЛЬКО при ошибке
+          return (
+            <li key={qi} style={{ marginBottom: 16 }}>
+              <div style={{ fontWeight: 600 }}>{q.text}</div>
+              {q.options.map((opt, oi) => {
+                const selected = picked === oi;
+                const correct = submitted && oi === q.correct;
+                const wrong = submitted && selected && oi !== q.correct;
+                const border = correct
+                  ? "2px solid #2e7d32"
+                  : wrong
+                  ? "2px solid #c62828"
+                  : "1px solid #bbb";
+                return (
+                  <label
+                    key={oi}
+                    style={{
+                      display: "block",
+                      marginTop: 6,
+                      padding: "6px 8px",
+                      borderRadius: 8,
+                      border,
+                      opacity: submitted ? 0.9 : 1,
+                      cursor: submitted ? "default" : "pointer"
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name={`q${qi}`}
+                      checked={selected}
+                      onChange={() => choose(qi, oi)}
+                      disabled={submitted}
+                      style={{ marginRight: 8 }}
+                    />
+                    {opt}
+                  </label>
+                );
+              })}
+
+              {isWrong && (
+                <div style={{ marginTop: 6, fontSize: 13 }}>
+                  <b>Пояснение: </b>
+                  {q.explain}
+                </div>
+              )}
+            </li>
+          );
+        })}
       </ol>
 
       {!submitted ? (
-        <button onClick={submit} disabled={answers.includes(-1)}>
+        <button className="btn primary" onClick={submit} disabled={answers.includes(-1)}>
           Проверить
         </button>
       ) : (
@@ -314,7 +337,9 @@ export default function Quiz() {
           <p style={{ marginTop: 12 }}>
             Итог: <b>{score}</b> из <b>{questions.length}</b>
           </p>
-          <button onClick={reset}>Сбросить</button>
+          <button className="btn ghost" onClick={reset}>
+            Сбросить
+          </button>
         </>
       )}
     </div>
