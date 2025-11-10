@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 
-const LOG_ENDPOINT =
-  "https://script.google.com/macros/s/AKfycbzHlw1hQM3rUWwVrQynPp1J1XwWsrjAUPQJFQD8_QaXGCdoLdufy35kpOfqsWWxefJi/exec";
-const LOG_VERSION = "v0.2.0";
-const LOG_SECRET  = "<edfa0406f4dbbba540d78fc4532d32135bf5e89bbeb5b95e8251b2cfa04ce12c"; // ← Добавил устойчивый токен.
+const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbzHlw1hQM3rUWwVrQynPp1J1XwWsrjAUPQJFQD8_QaXGCdoLdufy35kpOfqsWWxefJi/exec";
+const LOG_VERSION  = "v0.2.0";
+const LOG_SECRET   = "edfa0406f4dbbba540d78fc4532d32135bf5e89bbeb5b95e8251b2cfa04ce12c";
 
 function getClientId(): string {
   const k = "asapClientId";
@@ -238,7 +237,7 @@ export default function Quiz() {
   function submit() {
     setSubmitted(true);
 
-    // Логирование результата в Google Apps Script → Sheets
+    // Логирование результата в Google Apps Script → Sheets (с секрётом)
     const payload = {
       ts: new Date().toISOString(),
       score,
@@ -248,7 +247,8 @@ export default function Quiz() {
       userAgent: navigator.userAgent,
       referrer: document.referrer,
       page: location.href,
-      tzOffset: new Date().getTimezoneOffset()
+      tzOffset: new Date().getTimezoneOffset(),
+      secret: LOG_SECRET, // ← добавлено: проверяется в Apps Script
     };
 
     try {
