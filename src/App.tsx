@@ -1,8 +1,11 @@
 import { HashRouter, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
-import Quiz from "./modules/Quiz";
-import HeaderCheck from "./modules/HeaderCheck";
-import DmarcReader from "./modules/DmarcReader";
-import RulesAudit from "./modules/RulesAudit";
+import { Suspense, lazy } from "react"; // ← добавлено
+
+// Ленивая подгрузка страниц (чанки грузятся по переходу на маршрут)
+const Quiz        = lazy(() => import("./modules/Quiz"));
+const HeaderCheck = lazy(() => import("./modules/HeaderCheck"));
+const DmarcReader = lazy(() => import("./modules/DmarcReader"));
+const RulesAudit  = lazy(() => import("./modules/RulesAudit"));
 
 const VERSION = "v0.2.1"; // версия в футере; в заголовке — без версии
 
@@ -74,13 +77,16 @@ function Shell() {
   return (
     <>
       <TopBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/quiz"    element={<div className="page"><Quiz /></div>} />
-        <Route path="/headers" element={<div className="page"><HeaderCheck /></div>} />
-        <Route path="/dmarc"   element={<div className="page"><DmarcReader /></div>} />
-        <Route path="/rules"   element={<div className="page"><RulesAudit /></div>} />
-      </Routes>
+      {/* При первой загрузке каждого модуля показываем простой fallback */}
+      <Suspense fallback={<div className="page"><p>Загрузка…</p></div>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/quiz"    element={<div className="page"><Quiz /></div>} />
+          <Route path="/headers" element={<div className="page"><HeaderCheck /></div>} />
+          <Route path="/dmarc"   element={<div className="page"><DmarcReader /></div>} />
+          <Route path="/rules"   element={<div className="page"><RulesAudit /></div>} />
+        </Routes>
+      </Suspense>
       <footer className="footer">
         © 2025 ASAP (учебный прототип). Версия {VERSION}. Все данные — учебные.
       </footer>
